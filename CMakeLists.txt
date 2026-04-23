@@ -5,5 +5,5 @@ set(CMAKE_C_STANDARD 11)
 
 find_package(raylib REQUIRED)
 
-add_executable(drawing-app apps/drawing/main.c)
+add_executable(drawing-app apps/drawing/main.c apps/drawing/button.c  apps/drawing/edit_mode.c)
 target_link_libraries(drawing-app raylib)
