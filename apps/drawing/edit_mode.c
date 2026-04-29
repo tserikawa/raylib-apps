@@ -3,6 +3,8 @@
 
 static const char *text_add_point = "MODE: ADD POINT";
 static const char *text_delete_point = "MODE: DELETE POINT";
+static const char *text_add_line = "MODE: ADD LINE";
+static const char *text_delete_line = "MODE: DELETE LINE";
 static const char *text_waiting = "COMMAND WAITING...";
 
 void mode_draw_label(const edit_mode *mode, int canvas_left)
@@ -14,6 +16,14 @@ void mode_draw_label(const edit_mode *mode, int canvas_left)
     else if (*mode == delete_point)
     {
         DrawText(text_delete_point, canvas_left + 20, 20, 20, BLACK);
+    }
+    else if (*mode == add_line)
+    {
+        DrawText(text_add_line, canvas_left + 20, 20, 20, BLACK);
+    }
+    else if (*mode == delete_line)
+    {
+        DrawText(text_delete_line, canvas_left + 20, 20, 20, BLACK);
     }
     else
     {
