@@ -6,6 +6,7 @@
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 
 int find_points(const Vector2 *cursor, const Vector2 *pts, int count, int eps)
 {
@@ -94,12 +95,8 @@ int main(void)
         printf("Faile...");
         return -1;
     }
-    Vector2 *line_first_point;
-    if ((line_first_point = malloc(sizeof(Vector2))) == NULL)
-    {
-        return -1;
-    }
-    int is_line_first_point_set = false;
+    // 未設定を表すためにNANを使う。
+    Vector2 line_first_point = {NAN, NAN};
 
     // UI
     edit_mode mode = waiting;
@@ -243,14 +240,14 @@ int main(void)
             
             if( mode == add_line)
             {
-                if(!is_line_first_point_set){
-                    *line_first_point = cursor;
-                    is_line_first_point_set = true;
+                if(isnan(line_first_point.x) || isnan(line_first_point.y)){
+                    line_first_point = cursor;
                 }else{
-                    line2 ln = (line2){ *line_first_point, cursor };
+                    line2 ln = (line2){ line_first_point, cursor };
                     lines[lines_count] = ln;
                     lines_count++;
-                    is_line_first_point_set = false;
+                    line_first_point.x = NAN;
+                    line_first_point.y = NAN;
                 }
             }
         }
@@ -348,8 +345,8 @@ int main(void)
         }
 
         // 線分追加時の線分を描画
-        if (is_line_first_point_set){
-            DrawLineEx(*line_first_point, cursor, 1.0, BLUE);
+        if (!isnan(line_first_point.x) && !isnan(line_first_point.y)){
+            DrawLineEx(line_first_point, cursor, 1.0, BLUE);
         }
         #pragma endregion
 
