@@ -9,14 +9,14 @@ typedef struct {
     int width;
     int height;
     char *text;
-} button;
+} Button;
 
-button *button_calloc(int top_left_x, int top_left_y, int width, int height, const char *x);
+Button *Button_Calloc(int top_left_x, int top_left_y, int width, int height, const char *x);
 
-void button_free(button *button);
+void Button_Free(Button *Button);
 
-void button_draw(const button *btn, Color btn_color, Color text_color);
+void Button_Draw(const Button *btn, Color btn_color, Color text_color);
 
-int button_is_inside(const button *btn, int x, int y);
+int Button_IsInside(const Button *btn, int x, int y);
 
 #endif

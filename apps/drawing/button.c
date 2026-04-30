@@ -3,8 +3,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-button *button_calloc(int top_left_x, int top_left_y, int width, int height, const char *x){
-    button *btn = malloc(sizeof(button));
+Button *Button_Calloc(int top_left_x, int top_left_y, int width, int height, const char *x){
+    Button *btn = malloc(sizeof(Button));
     if(btn == NULL){
         return NULL;
     }
@@ -23,12 +23,12 @@ button *button_calloc(int top_left_x, int top_left_y, int width, int height, con
     return btn;
 }
 
-void button_free(button *btn){
+void Button_Free(Button *btn){
     free(btn->text);
     free(btn);
 }
 
-void button_draw(const button *btn, Color btn_color, Color text_color){
+void Button_Draw(const Button *btn, Color btn_color, Color text_color){
     DrawRectangle(
         btn->top_left_x,
         btn->top_left_y,
@@ -46,7 +46,7 @@ void button_draw(const button *btn, Color btn_color, Color text_color){
     );
 }
 
-int button_is_inside(const button *btn, int x, int y){
+int Button_IsInside(const Button *btn, int x, int y){
     int top = btn->top_left_y;
     int bottom = top + btn->height;
     int left = btn->top_left_x;

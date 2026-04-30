@@ -9,6 +9,9 @@ set(DRAWING_SOURCES
     apps/drawing/main.c
     apps/drawing/button.c
     apps/drawing/edit_mode.c
+    apps/drawing/line2.c
+    apps/drawing/vector2Ex.c
+    apps/drawing/window.c
 )
 add_executable(drawing-app ${DRAWING_SOURCES})
 target_link_libraries(drawing-app raylib)
