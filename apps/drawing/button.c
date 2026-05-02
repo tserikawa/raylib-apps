@@ -4,32 +4,6 @@
 #include <string.h>
 #include <stdbool.h>
 
-Button *Button_Calloc(int top_left_x, int top_left_y, int width, int height, const char *x){
-    Button *btn = malloc(sizeof(Button));
-    if(btn == NULL){
-        return NULL;
-    }
-
-    btn->top_left_x = top_left_x;
-    btn->top_left_y = top_left_y;
-    btn->width = width;
-    btn->height = height;
-    btn->isHovered = false;
-
-    btn->text = strdup(x);
-    if(btn->text == NULL){
-        free(btn);
-        return NULL;
-    }
-
-    return btn;
-}
-
-void Button_Free(Button *btn){
-    free(btn->text);
-    free(btn);
-}
-
 void Button_Hovered(Button *button)
 {
     button->isHovered = true;

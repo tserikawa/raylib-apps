@@ -214,12 +214,12 @@ int main(void)
 
     // UI
     EditMode currentMode = waiting;
-    Button *pointAddButton = Button_Calloc(20, 40, 50, 20, "ADD");
-    Button *pointDeleteButton = Button_Calloc(80, 40, 70, 20, "DELETE");
-    Button *pointClearButton = Button_Calloc(160, 40, 60, 20, "CLEAR");
-    Button *lineAddButton = Button_Calloc(20, 120, 50, 20, "ADD");
-    Button *lineDeleteButton = Button_Calloc(80, 120, 70, 20, "DELETE");
-    Button *lineClearButton = Button_Calloc(160, 120, 60, 20, "CLEAR");
+    Button pointAddButton = {20, 40, 50, 20, "ADD"};
+    Button pointDeleteButton = {80, 40, 70, 20, "DELETE"};
+    Button pointClearButton = {160, 40, 60, 20, "CLEAR"};
+    Button lineAddButton = {20, 120, 50, 20, "ADD"};
+    Button lineDeleteButton = {80, 120, 70, 20, "DELETE"};
+    Button lineClearButton = {160, 120, 60, 20, "CLEAR"};
 
     // Main game loop
     while (!WindowShouldClose()) // Detect window close Button or ESC key
@@ -238,8 +238,8 @@ int main(void)
         DrawLine(window.canvasLeftX, 0, window.canvasLeftX, window.height, GRAY);
 
         // ボタン
-        UpdatePointCategory(pointAddButton, pointDeleteButton, pointClearButton, points, &currentMode, cursor);
-        UpdateLineCategory(lineAddButton, lineDeleteButton, lineClearButton, lines, &currentMode, cursor);
+        UpdatePointCategory(&pointAddButton, &pointDeleteButton, &pointClearButton, points, &currentMode, cursor);
+        UpdateLineCategory(&lineAddButton, &lineDeleteButton, &lineClearButton, lines, &currentMode, cursor);
 
         // イベント
         if(isInsideCanvas)
@@ -287,12 +287,6 @@ int main(void)
 
     // De-Initialization
     //--------------------------------------------------------------------------------------
-    Button_Free(lineClearButton);
-    Button_Free(lineDeleteButton);
-    Button_Free(lineAddButton);
-    Button_Free(pointClearButton);
-    Button_Free(pointDeleteButton);
-    Button_Free(pointAddButton);
     CloseWindow(); // Close window and OpenGL context
     //--------------------------------------------------------------------------------------
 
