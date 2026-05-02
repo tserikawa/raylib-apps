@@ -2,6 +2,7 @@
 #include "raylib.h"
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 
 Button *Button_Calloc(int top_left_x, int top_left_y, int width, int height, const char *x){
     Button *btn = malloc(sizeof(Button));
@@ -13,6 +14,7 @@ Button *Button_Calloc(int top_left_x, int top_left_y, int width, int height, con
     btn->top_left_y = top_left_y;
     btn->width = width;
     btn->height = height;
+    btn->isHovered = false;
 
     btn->text = strdup(x);
     if(btn->text == NULL){
@@ -28,21 +30,32 @@ void Button_Free(Button *btn){
     free(btn);
 }
 
-void Button_Draw(const Button *btn, Color btn_color, Color text_color){
+void Button_Hovered(Button *button)
+{
+    button->isHovered = true;
+}
+
+void Button_UnHovered(Button *button)
+{
+    button->isHovered = false;
+}
+
+void Button_Draw(const Button *button)
+{
     DrawRectangle(
-        btn->top_left_x,
-        btn->top_left_y,
-        btn->width,
-        btn->height,
-        btn_color
+        button->top_left_x,
+        button->top_left_y,
+        button->width,
+        button->height,
+        button->isHovered ? DARKGRAY : LIGHTGRAY
     );
 
     DrawText(
-        btn->text,
-        btn->top_left_x + 10,
-        btn->top_left_y + btn->height / 6,
-        btn->height * 2 / 3,
-        text_color
+        button->text,
+        button->top_left_x + 10,
+        button->top_left_y + button->height / 6,
+        button->height * 2 / 3,
+        button->isHovered ? WHITE : BLACK
     );
 }
 
