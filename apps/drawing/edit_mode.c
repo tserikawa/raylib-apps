@@ -1,26 +1,36 @@
 #include "edit_mode.h"
 #include "raylib.h"
+#include <string.h>
 
 void EditMode_Draw(const EditMode *mode, int canvas_left)
 {
-    if (*mode == add_point)
+    char text[255];
+
+    if (*mode == addPoint)
     {
-        DrawText("MODE: ADD POINT", canvas_left + 20, 20, 20, BLACK);
+        strncpy(text, "MODE: ADD POINT", sizeof(text) - 1);
     }
-    else if (*mode == delete_point)
+    else if (*mode == deletePoint)
     {
-        DrawText("MODE: DELETE POINT", canvas_left + 20, 20, 20, BLACK);
+        strncpy(text, "MODE: DELETE POINT", sizeof(text) - 1);
     }
-    else if (*mode == add_line)
+    else if (*mode == selectPoint)
     {
-        DrawText("MODE: ADD LINE", canvas_left + 20, 20, 20, BLACK);
+        strncpy(text, "MODE: SELECT POINT", sizeof(text) - 1);
     }
-    else if (*mode == delete_line)
+    else if (*mode == addLine)
     {
-        DrawText("MODE: DELETE LINE", canvas_left + 20, 20, 20, BLACK);
+        strncpy(text, "MODE: ADD LINE", sizeof(text) - 1);
+    }
+    else if (*mode == deleteLine)
+    {
+        strncpy(text, "MODE: DELETE LINE", sizeof(text) - 1);
     }
     else
     {
-        DrawText("COMMAND WAITING...", canvas_left + 20, 20, 20, BLACK);
+        strncpy(text, "COMMAND WAITING...", sizeof(text) - 1);
     }
+    text[254] = '\0';
+
+    DrawText(text, canvas_left + 20, 20, 20, BLACK);
 }

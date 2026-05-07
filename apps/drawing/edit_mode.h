@@ -3,10 +3,11 @@
 
 typedef enum{
     waiting,
-    add_point,
-    delete_point,
-    add_line,
-    delete_line
+    addPoint,
+    deletePoint,
+    selectPoint,
+    addLine,
+    deleteLine
 }EditMode;
 
 void EditMode_Draw(const EditMode *mode, int canvas_left);

@@ -18,7 +18,7 @@ PointArray *PointArray_Calloc(int capacity)
     return array;
 }
 
-void PointArray_Add(PointArray *array, const Vector2 value)
+void PointArray_Add(PointArray *array, const Point2 value)
 {
     int index = array->size;
     array->values[index] = value;
@@ -43,15 +43,18 @@ void PointArray_RemoveAt(PointArray *array, int index)
     }
 }
 
+
+void PointArray_UnselectAll(PointArray *array)
+{
+    for(int i = 0; i < array->size; i++)
+    {
+        array->values[i].isSelected = false;
+    }
+}
+
 void PointArray_Clear(PointArray *array)
 {
     array->size = 0;
-}
-
-Vector2 PointArray_Get(const PointArray *array, int index)
-{
-    assert(0 <= index && index < array->size);
-    return array->values[index];
 }
 
 void PointArray_Free(PointArray *array)
@@ -63,15 +66,15 @@ void PointArray_Free(PointArray *array)
     array = NULL;
 }
 
-int PointArray_FindClosestPointIndex(const PointArray *points, const Vector2 *target, int tolerance)
+int PointArray_FindClosestPointIndex(const PointArray *points, const Point2 *target, int tolerance)
 {
 
     assert(tolerance > 0);
 
     for (int i = 0; i < points->size; i++)
     {
-        int dx = target->x - PointArray_Get(points, i).x;
-        int dy = target->y - PointArray_Get(points, i).y;
+        int dx = target->x - points->values[i].x;
+        int dy = target->y - points->values[i].y;
         int dxy = dx * dx + dy * dy;
         if (dxy <= tolerance * tolerance)
         {

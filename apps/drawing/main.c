@@ -1,5 +1,6 @@
 #include "button.h"
 #include "edit_mode.h"
+#include "point2.h"
 #include "line2.h"
 #include "line_array.h"
 #include "point_array.h"
@@ -11,7 +12,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-void UpdatePointCategory(Button *addButton, Button *deleteButton, Button *clearButton, PointArray *points,
+void UpdatePointCategory(Button *addButton, Button *deleteButton, Button *clearButton, Button *selectButton, Button *resetButton, PointArray *points,
                          EditMode *currentMode, const Vector2 mouse)
 {
     // ラベル
@@ -22,7 +23,7 @@ void UpdatePointCategory(Button *addButton, Button *deleteButton, Button *clearB
         Button_Hovered(addButton);
         if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
         {
-            *currentMode = add_point;
+            *currentMode = addPoint;
         }
     }
     else
@@ -37,7 +38,7 @@ void UpdatePointCategory(Button *addButton, Button *deleteButton, Button *clearB
         Button_Hovered(deleteButton);
         if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
         {
-            *currentMode = delete_point;
+            *currentMode = deletePoint;
         }
     }
     else
@@ -61,6 +62,37 @@ void UpdatePointCategory(Button *addButton, Button *deleteButton, Button *clearB
         Button_UnHovered(clearButton);
     }
     Button_Draw(clearButton);
+
+    // SELECTボタン
+    if (Button_IsInside(selectButton, mouse.x, mouse.y))
+    {
+        Button_Hovered(selectButton);
+        if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
+        {
+            *currentMode = selectPoint;
+        }
+    }
+    else
+    {
+        Button_UnHovered(selectButton);
+    }
+    Button_Draw(selectButton);
+
+    // RESETボタン
+    if (Button_IsInside(resetButton, mouse.x, mouse.y))
+    {
+        Button_Hovered(resetButton);
+        if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
+        {
+            *currentMode = waiting;
+            PointArray_UnselectAll(points);
+        }
+    }
+    else
+    {
+        Button_UnHovered(resetButton);
+    }
+    Button_Draw(resetButton);
 }
 
 void UpdateLineCategory(Button *addButton, Button *deleteButton, Button *clearButton, LineArray *lines,
@@ -74,7 +106,7 @@ void UpdateLineCategory(Button *addButton, Button *deleteButton, Button *clearBu
         Button_Hovered(addButton);
         if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
         {
-            *currentMode = add_line;
+            *currentMode = addLine;
         }
     }
     else
@@ -89,7 +121,7 @@ void UpdateLineCategory(Button *addButton, Button *deleteButton, Button *clearBu
         Button_Hovered(deleteButton);
         if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
         {
-            *currentMode = delete_line;
+            *currentMode = deleteLine;
         }
     }
     else
@@ -119,23 +151,33 @@ void UpdatePointCanvasEvent(const EditMode *currentMode, const Vector2 *cursor, 
 {
     const int tolerance = 5;
 
-    if (*currentMode == delete_point)
+    if (*currentMode == deletePoint)
     {
         DrawCircleLines(cursor->x, cursor->y, tolerance, RED);
     }
 
     if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
     {
-        if (*currentMode == add_point)
+        if (*currentMode == addPoint)
         {
-            PointArray_Add(points, *cursor);
+            PointArray_Add(points, Point2_FromVector2(cursor, false));
         }
-        else if (*currentMode == delete_point)
+        else if (*currentMode == deletePoint)
         {
-            int index = PointArray_FindClosestPointIndex(points, cursor, tolerance);
+            Point2 target = Point2_FromVector2(cursor, false);
+            int index = PointArray_FindClosestPointIndex(points, &target, tolerance);
             if (index != -1)
             {
                 PointArray_RemoveAt(points, index);
+            }
+        }
+        else if (*currentMode == selectPoint)
+        {
+            Point2 target = Point2_FromVector2(cursor, false);
+            int index = PointArray_FindClosestPointIndex(points, &target, tolerance);
+            if (index != -1)
+            {
+                points->values[index].isSelected = true;
             }
         }
     }
@@ -145,14 +187,14 @@ void UpdateLineCanvasEvent(const EditMode *currentMode, const Vector2 *cursor, L
 {
     const int tolerance = 5;
 
-    if (*currentMode == delete_line)
+    if (*currentMode == deleteLine)
     {
         DrawCircleLines(cursor->x, cursor->y, tolerance, RED);
     }
 
     if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
     {
-        if (*currentMode == add_line)
+        if (*currentMode == addLine)
         {
             if (isnan(lineStartPoint->x) || isnan(lineStartPoint->y))
             {
@@ -165,7 +207,7 @@ void UpdateLineCanvasEvent(const EditMode *currentMode, const Vector2 *cursor, L
                 *lineStartPoint = (Vector2){NAN, NAN};
             }
         }
-        else if (*currentMode == delete_line)
+        else if (*currentMode == deleteLine)
         {
             int idx = LineArray_FindClosestLineIndex(lines, cursor, tolerance);
             if (idx != -1)
@@ -217,6 +259,8 @@ int main(void)
     Button pointAddButton = {20, 40, 50, 20, "ADD"};
     Button pointDeleteButton = {80, 40, 70, 20, "DELETE"};
     Button pointClearButton = {160, 40, 60, 20, "CLEAR"};
+    Button pointSelectButton = {20, 70, 70, 20, "SELECT"};
+    Button pointResetButton = {100, 70, 60, 20, "RESET"};
     Button lineAddButton = {20, 120, 50, 20, "ADD"};
     Button lineDeleteButton = {80, 120, 70, 20, "DELETE"};
     Button lineClearButton = {160, 120, 60, 20, "CLEAR"};
@@ -238,7 +282,7 @@ int main(void)
         DrawLine(window.canvasLeftX, 0, window.canvasLeftX, window.height, GRAY);
 
         // ボタン
-        UpdatePointCategory(&pointAddButton, &pointDeleteButton, &pointClearButton, points, &currentMode, cursor);
+        UpdatePointCategory(&pointAddButton, &pointDeleteButton, &pointClearButton, &pointSelectButton, &pointResetButton, points, &currentMode, cursor);
         UpdateLineCategory(&lineAddButton, &lineDeleteButton, &lineClearButton, lines, &currentMode, cursor);
 
         // イベント
@@ -264,8 +308,9 @@ int main(void)
         // 作成済みの点を描画
         for (int i = 0; i < points->size; i++)
         {
-            Vector2 point = PointArray_Get(points, i);
-            DrawCircle(point.x, point.y, 5.0f, BLACK);
+            Vector2 point = Point2_AsVector2(&points->values[i]);
+            Color color = points->values[i].isSelected ? RED : BLACK;
+            DrawCircle(point.x, point.y, 5.0f, color);
         }
 
         // 作成済みの線を描画
@@ -287,6 +332,8 @@ int main(void)
 
     // De-Initialization
     //--------------------------------------------------------------------------------------
+    LineArray_Free(lines);
+    PointArray_Free(points);
     CloseWindow(); // Close window and OpenGL context
     //--------------------------------------------------------------------------------------
 

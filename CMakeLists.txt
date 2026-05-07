@@ -10,6 +10,7 @@ set(DRAWING_SOURCES
     apps/drawing/button.c
     apps/drawing/edit_mode.c
     apps/drawing/window.c
+    apps/drawing/point2.c
     apps/drawing/point_array.c
     apps/drawing/line_array.c
 )
