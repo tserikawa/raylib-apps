@@ -161,7 +161,7 @@ void UpdateLineCategory(ButtonGroup *buttonGroup, LineArray *lines, EditMode *cu
         Button_Hovered(selectButton);
         if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
         {
-            *currentMode = selectPoint;
+            *currentMode = selectLine;
         }
     }
     else
@@ -178,6 +178,7 @@ void UpdateLineCategory(ButtonGroup *buttonGroup, LineArray *lines, EditMode *cu
         if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
         {
             *currentMode = waiting;
+            LineArray_UnselectAll(lines);
         }
     }
     else
@@ -249,10 +250,21 @@ void UpdateLineCanvasEvent(const EditMode *currentMode, const Vector2 *cursor, L
         }
         else if (*currentMode == deleteLine)
         {
-            int idx = LineArray_FindClosestLineIndex(lines, cursor, tolerance);
+
+            Point2 target = Point2_FromVector2(cursor, false);
+            int idx = LineArray_FindClosestLineIndex(lines, &target, tolerance);
             if (idx != -1)
             {
                 LineArray_RemoveAt(lines, idx);
+            }
+        }
+        else if (*currentMode == selectLine)
+        {
+            Point2 target = Point2_FromVector2(cursor, false);
+            int index = LineArray_FindClosestLineIndex(lines, &target, tolerance);
+            if (index != -1)
+            {
+                lines->values[index].isSelected = true;
             }
         }
     }
@@ -364,7 +376,8 @@ int main(void)
         // 作成済みの線を描画
         for (int i = 0; i < lines->size; i++)
         {
-            DrawLineEx(lines->values[i].start, lines->values[i].end, 2.0, BLACK);
+            Color color = lines->values[i].isSelected ? RED : BLACK;
+            DrawLineEx(lines->values[i].start, lines->values[i].end, 2.0, color);
         }
 
         // 線分追加時の線分を描画

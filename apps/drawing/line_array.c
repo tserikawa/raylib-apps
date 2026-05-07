@@ -45,6 +45,14 @@ void LineArray_RemoveAt(LineArray *array, int index)
     }
 }
 
+void LineArray_UnselectAll(LineArray *array)
+{
+    for(int i = 0; i < array->size; i++)
+    {
+        array->values[i].isSelected = false;
+    }
+}
+
 void LineArray_Clear(LineArray *array)
 {
     array->size = 0;
@@ -65,7 +73,7 @@ void LineArray_Free(LineArray *array)
     array = NULL;
 }
 
-int LineArray_FindClosestLineIndex(const LineArray *lines, const Vector2 *position, int tolerance)
+int LineArray_FindClosestLineIndex(const LineArray *lines, const Point2 *position, int tolerance)
 {
     assert(tolerance > 0);
 
@@ -75,7 +83,7 @@ int LineArray_FindClosestLineIndex(const LineArray *lines, const Vector2 *positi
     {
         Vector2 a = lines->values[i].start;
         Vector2 b = lines->values[i].end;
-        Vector2 c = *position;
+        Vector2 c = Point2_AsVector2(position);
 
         Vector2 ab = Vector2Subtract(b, a);
         Vector2 ac = Vector2Subtract(c, a);

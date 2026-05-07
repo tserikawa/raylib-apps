@@ -6,8 +6,7 @@
 typedef struct {
     Vector2 start;
     Vector2 end;
+    bool isSelected;
 } Line2;
-
-int FindClosestLineIndex(const Vector2 *cursor, const Line2 *lines, int lineCount, int tolerance);
 
 #endif
