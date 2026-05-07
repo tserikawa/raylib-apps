@@ -26,6 +26,10 @@ void EditMode_Draw(const EditMode *mode, int canvas_left)
     {
         strncpy(text, "MODE: DELETE LINE", sizeof(text) - 1);
     }
+    else if (*mode == selectLine)
+    {
+        strncpy(text, "MODE: SELECT LINE", sizeof(text) - 1);
+    }
     else
     {
         strncpy(text, "COMMAND WAITING...", sizeof(text) - 1);

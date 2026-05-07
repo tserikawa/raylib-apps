@@ -1,4 +1,5 @@
 #include "button.h"
+#include "button_group.h"
 #include "edit_mode.h"
 #include "point2.h"
 #include "line2.h"
@@ -12,12 +13,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-void UpdatePointCategory(Button *addButton, Button *deleteButton, Button *clearButton, Button *selectButton, Button *resetButton, PointArray *points,
-                         EditMode *currentMode, const Vector2 mouse)
+void UpdatePointCategory(ButtonGroup *buttonGroup, PointArray *points, EditMode *currentMode, const Vector2 mouse)
 {
     // ラベル
     DrawText("POINT", 20, 20, 20, BLACK);
     // ADDボタン
+    Button *addButton = &buttonGroup->addButton;
     if (Button_IsInside(addButton, mouse.x, mouse.y))
     {
         Button_Hovered(addButton);
@@ -33,6 +34,7 @@ void UpdatePointCategory(Button *addButton, Button *deleteButton, Button *clearB
     Button_Draw(addButton);
 
     // DELETEボタン
+    Button *deleteButton = &buttonGroup->deleteButton;
     if (Button_IsInside(deleteButton, mouse.x, mouse.y))
     {
         Button_Hovered(deleteButton);
@@ -48,6 +50,7 @@ void UpdatePointCategory(Button *addButton, Button *deleteButton, Button *clearB
     Button_Draw(deleteButton);
 
     // CLEARボタン
+    Button *clearButton = &buttonGroup->clearButton;
     if (Button_IsInside(clearButton, mouse.x, mouse.y))
     {
         Button_Hovered(clearButton);
@@ -64,6 +67,7 @@ void UpdatePointCategory(Button *addButton, Button *deleteButton, Button *clearB
     Button_Draw(clearButton);
 
     // SELECTボタン
+    Button *selectButton = &buttonGroup->selectButton;
     if (Button_IsInside(selectButton, mouse.x, mouse.y))
     {
         Button_Hovered(selectButton);
@@ -79,6 +83,7 @@ void UpdatePointCategory(Button *addButton, Button *deleteButton, Button *clearB
     Button_Draw(selectButton);
 
     // RESETボタン
+    Button *resetButton = &buttonGroup->resetButton;
     if (Button_IsInside(resetButton, mouse.x, mouse.y))
     {
         Button_Hovered(resetButton);
@@ -95,12 +100,13 @@ void UpdatePointCategory(Button *addButton, Button *deleteButton, Button *clearB
     Button_Draw(resetButton);
 }
 
-void UpdateLineCategory(Button *addButton, Button *deleteButton, Button *clearButton, LineArray *lines,
-                        EditMode *currentMode, const Vector2 mouse)
+void UpdateLineCategory(ButtonGroup *buttonGroup, LineArray *lines, EditMode *currentMode, const Vector2 mouse)
 {
     // ラベル
     DrawText("LINE", 20, 100, 20, BLACK);
+    
     // ADDボタン
+    Button *addButton = &buttonGroup->addButton;
     if (Button_IsInside(addButton, mouse.x, mouse.y))
     {
         Button_Hovered(addButton);
@@ -116,6 +122,7 @@ void UpdateLineCategory(Button *addButton, Button *deleteButton, Button *clearBu
     Button_Draw(addButton);
 
     // DELETEボタン
+    Button *deleteButton = &buttonGroup->deleteButton;
     if (Button_IsInside(deleteButton, mouse.x, mouse.y))
     {
         Button_Hovered(deleteButton);
@@ -131,6 +138,7 @@ void UpdateLineCategory(Button *addButton, Button *deleteButton, Button *clearBu
     Button_Draw(deleteButton);
 
     // CLEARボタン
+    Button *clearButton = &buttonGroup->clearButton;
     if (Button_IsInside(clearButton, mouse.x, mouse.y))
     {
         Button_Hovered(clearButton);
@@ -145,6 +153,38 @@ void UpdateLineCategory(Button *addButton, Button *deleteButton, Button *clearBu
         Button_UnHovered(clearButton);
     }
     Button_Draw(clearButton);
+
+    // SELECTボタン
+    Button *selectButton = &buttonGroup->selectButton;
+    if (Button_IsInside(selectButton, mouse.x, mouse.y))
+    {
+        Button_Hovered(selectButton);
+        if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
+        {
+            *currentMode = selectPoint;
+        }
+    }
+    else
+    {
+        Button_UnHovered(selectButton);
+    }
+    Button_Draw(selectButton);
+
+    // RESETボタン
+    Button *resetButton = &buttonGroup->resetButton;
+    if (Button_IsInside(resetButton, mouse.x, mouse.y))
+    {
+        Button_Hovered(resetButton);
+        if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
+        {
+            *currentMode = waiting;
+        }
+    }
+    else
+    {
+        Button_UnHovered(resetButton);
+    }
+    Button_Draw(resetButton);
 }
 
 void UpdatePointCanvasEvent(const EditMode *currentMode, const Vector2 *cursor, PointArray *points)
@@ -256,14 +296,22 @@ int main(void)
 
     // UI
     EditMode currentMode = waiting;
-    Button pointAddButton = {20, 40, 50, 20, "ADD"};
-    Button pointDeleteButton = {80, 40, 70, 20, "DELETE"};
-    Button pointClearButton = {160, 40, 60, 20, "CLEAR"};
-    Button pointSelectButton = {20, 70, 70, 20, "SELECT"};
-    Button pointResetButton = {100, 70, 60, 20, "RESET"};
-    Button lineAddButton = {20, 120, 50, 20, "ADD"};
-    Button lineDeleteButton = {80, 120, 70, 20, "DELETE"};
-    Button lineClearButton = {160, 120, 60, 20, "CLEAR"};
+    ButtonGroup pointButtonGroup = 
+    {
+        .addButton = {20, 40, 50, 20, "ADD"},
+        .deleteButton =  {80, 40, 70, 20, "DELETE"},
+        .clearButton = {160, 40, 60, 20, "CLEAR"},
+        .selectButton = {20, 70, 70, 20, "SELECT"},
+        .resetButton = {100, 70, 60, 20, "RESET"}
+    };
+    ButtonGroup lineButtonGroup = 
+    {
+        .addButton = {20, 120, 50, 20, "ADD"},
+        .deleteButton =  {80, 120, 70, 20, "DELETE"},
+        .clearButton = {160, 120, 60, 20, "CLEAR"},
+        .selectButton = {20, 150, 70, 20, "SELECT"},
+        .resetButton = {100, 150, 60, 20, "RESET"}
+    };
 
     // Main game loop
     while (!WindowShouldClose()) // Detect window close Button or ESC key
@@ -282,8 +330,8 @@ int main(void)
         DrawLine(window.canvasLeftX, 0, window.canvasLeftX, window.height, GRAY);
 
         // ボタン
-        UpdatePointCategory(&pointAddButton, &pointDeleteButton, &pointClearButton, &pointSelectButton, &pointResetButton, points, &currentMode, cursor);
-        UpdateLineCategory(&lineAddButton, &lineDeleteButton, &lineClearButton, lines, &currentMode, cursor);
+        UpdatePointCategory(&pointButtonGroup, points, &currentMode, cursor);
+        UpdateLineCategory(&lineButtonGroup, lines, &currentMode, cursor);
 
         // イベント
         if(isInsideCanvas)

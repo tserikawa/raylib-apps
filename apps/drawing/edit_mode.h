@@ -7,7 +7,8 @@ typedef enum{
     deletePoint,
     selectPoint,
     addLine,
-    deleteLine
+    deleteLine,
+    selectLine,
 }EditMode;
 
 void EditMode_Draw(const EditMode *mode, int canvas_left);
